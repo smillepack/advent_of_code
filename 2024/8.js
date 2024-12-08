@@ -23,7 +23,7 @@ data.forEach((row, rowIndex) => {
 		if (!antennas.has(cell)) {
 			antennas.set(cell, []);
 		}
-		
+
 		const positions = antennas.get(cell);
 
 		positions.push({ x: columnIndex, y: rowIndex });
@@ -36,30 +36,24 @@ console.log(antennas);
 
 const antinodes = new Set();
 
-antennas.forEach((value, key) => {
-	for (let i = 0; i < value.length; i++) {
-		const antenna = value[i];
+antennas.forEach((value) => {
+ value.forEach((antenna, i) => {
+   if (value.length > 1) antinodes.add(`y:${antenna.y}|x:${antenna.x}`)
 
-		if (value.length > 1) antinodes.add(`y:${antenna.y}|x:${antenna.x}`)
+  value.forEach((anotherAntenna, j) => {
+    if (i === j) return;
 
-		for (let j = 0; j < value.length; j++) {
-			if (i === j) continue;
+    const xStep = antenna.x - anotherAntenna.x;
+		const yStep = antenna.y - anotherAntenna.y
 
-			const anotherAntenna = value[j];
-			const xStep = antenna.x - anotherAntenna.x;
-			const yStep = antenna.y - anotherAntenna.y
+		for (let m = xStep, l = yStep; antenna.x + m >= 0 && antenna.x + m < data[0].length && antenna.y + l >= 0 && antenna.y + l < data.length; m += xStep, l += yStep) {
+			const antinodeX = antenna.x + m
+			const antinodeY = antenna.y + l
 
-			for (let m = xStep, l = yStep; antenna.x + m >= 0 && antenna.x + m < data[0].length && antenna.y + l >= 0 && antenna.y + l < data.length; m += xStep, l += yStep) {
-				const antinodeX = antenna.x + m 
-				const antinodeY = antenna.y + l 
-
-
-				antinodes.add(`y:${antinodeY}|x:${antinodeX}`)
-
-			}
-
+			antinodes.add(`y:${antinodeY}|x:${antinodeX}`)
 		}
-	}	
+  })
+ })
 });
 
 
