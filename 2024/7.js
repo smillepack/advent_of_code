@@ -11,7 +11,7 @@ const data = convertedFile.map((row) => row.split(': ').map((str, index) => {
   if (!index) {
     return +str
   } else {
-    return str.split(' ')
+    return str.split(' ').map(Number)
   }
 } ))
 console.log(data);
@@ -21,11 +21,11 @@ data.forEach(([total, equation]) => {
   const sums = equation.reduce((acc, num, index) => {
     if (!index) return acc;
 
-    return acc.flatMap((sum) => [sum + +num, sum * +num, +`${sum}${num}`])
-  }, [+equation[0]]);
+    return acc.flatMap((sum) => [sum + num, sum * num, +`${sum}${num}`])
+  }, [equation[0]]);
 
-  if (sums.includes(+total)) {
-    result += +total;
+  if (sums.includes(total)) {
+    result += total;
   }
 })
 
