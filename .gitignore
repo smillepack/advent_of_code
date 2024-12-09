@@ -49,3 +49,4 @@ build/Release
 node_modules
 
 **/dummy.txt
+**/dummy_small.txt
