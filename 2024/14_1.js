@@ -9,7 +9,7 @@ data.pop();
 // console.log(data)
 
 const robots = data.map((input) => {
-  const [_ , pX, pY, vX, vY] = input.match(/p\=(\d+),(\d+) v\=(\-?\d+),(\-?\d+)/);
+  const [pX, pY, vX, vY] = input.match(/-?\d+/g);
 
   return { position: { x: parseInt(pX), y: parseInt(pY) }, velocity: { x: parseInt(vX), y: parseInt(vY) } };
 })
