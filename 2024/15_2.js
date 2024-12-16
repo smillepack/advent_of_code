@@ -51,24 +51,21 @@ const getNextPosition = ({ x, y }, move) => {
 
 const getNextPositions = (positions, move) => {
   let nextPositions = positions.map((objP) => getNextPosition(objP, move))
+
   if (nextPositions.some(({ x, y }) => '[]#'.includes(map[y][x]))) {
     nextPositions = nextPositions.filter(({ x, y }) => map[y][x] !== emptySym)
   }
 
-  if ('^v'.includes(move)) {
-    if (map[nextPositions.at(0).y][nextPositions.at(0).x] === ']') {
-      nextPositions.unshift({
-        x: nextPositions.at(0).x - 1,
-        y: nextPositions.at(0).y
-      })
-    }
+  if (!'^v'.includes(move)) return nextPositions;
 
-    if (map[nextPositions.at(-1).y][nextPositions.at(-1).x] === '[') {
-      nextPositions.push({
-        x: nextPositions.at(-1).x + 1,
-        y: nextPositions.at(-1).y
-      })
-    }
+  const { x: fx, y: fy } = nextPositions.at(0);
+  if (map[fy][fx] === ']') {
+    nextPositions.unshift({ x: fx - 1, y: fy });
+  }
+
+  const { x: lx, y: ly } = nextPositions.at(-1);
+  if (map[ly][lx] === '[') {
+    nextPositions.push({ x: lx + 1, y: ly });
   }
 
   return nextPositions;
@@ -81,10 +78,10 @@ const moveObj = (objectsPositions, move) => {
   if (nextPositions.some(({ x, y }) => '[]'.includes(map[y][x])) && !moveObj(nextPositions, move)) return false;
 
   objectsPositions.forEach(({ x: cx, y: cy }) => {
-    const obj = map[cy][cx];
-    const { x: nx, y: ny } = getNextPosition({ x: cx, y: cy }, move)
-    map[cy][cx] = emptySym
-    map[ny][nx] = obj
+    const objSym = map[cy][cx];
+    const { x: nx, y: ny } = getNextPosition({ x: cx, y: cy }, move);
+    map[cy][cx] = emptySym;
+    map[ny][nx] = objSym;
   })
 
   return true;

@@ -35,34 +35,23 @@ const robotSym = '@';
 const boxSym = 'O';
 const wallSym = '#';
 const emptySym = '.';
-const wallThickness = 1;
-const mapWidth = map[0].length;
 
 const getNextPosition = ({ x, y }, move) => {
-  const up = Math.max(wallThickness, y  - 1)
-  const right = Math.min(mapWidth - wallThickness - 1, x + 1)
-  const down = Math.min(mapWidth - wallThickness - 1, y + 1)
-  const left = Math.max(wallThickness, x - 1)
-
-  if (move === '^') return { x, y: up };
-  else if (move === '>') return { x: right, y };
-  else if (move === 'v') return { x, y: down };
-  else if (move === '<') return { x: left, y };
+  if (move === '^') return { x, y: y  - 1 };
+  else if (move === '>') return { x: x + 1, y };
+  else if (move === 'v') return { x, y: y + 1 };
+  else if (move === '<') return { x: x - 1, y };
 }
 
-const moveObj = (obj, move) => {
-  const { x, y } = obj
-  const nObj = getNextPosition({ x, y }, move)
-  const { x: nx, y: ny } = nObj
-  const nextPObj = map[ny][nx]
-  const char = map[y][x]
+const moveObj = ({ x, y }, move) => {
+  const { x: nx, y: ny } = getNextPosition({ x, y }, move)
 
-  if (nx === x && ny === y) return false;
-  if (nextPObj === wallSym) return false;
-  if (nextPObj === boxSym && !moveObj({ x: nx, y: ny }, move)) return false;
+  if (map[ny][nx] === wallSym) return false;
+  if (map[ny][nx] === boxSym && !moveObj({ x: nx, y: ny }, move)) return false;
 
+  const objSym = map[y][x]
   map[y][x] = emptySym
-  map[ny][nx] = char;
+  map[ny][nx] = objSym;
 
   return nObj;
 }
@@ -75,7 +64,7 @@ const robotPosition = {
   y: robotY
 };
 
-moves.forEach((move) => {
+moves.forEach((move, index) => {
   const moved = moveObj(robotPosition, move);
 
   if (moved) {
@@ -83,7 +72,9 @@ moves.forEach((move) => {
     robotPosition.y = moved.y;
   }
 
-  // printMap(map, 'move ' + move)
+  if (index < 70) {
+    printMap(map, 'move ' + move + index)
+  }
 })
 
 printMap(map, 'result')
