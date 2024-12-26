@@ -13,14 +13,14 @@ const canBeBuild = (towel) => {
   if (towel.length === 0) return 1;
   if (store.has(towel)) return store.get(towel);
 
-  const starts = [];
+  const tails = [];
   colorPatterns.forEach((pattern) => {
     if (!towel.startsWith(pattern)) return;
 
-    starts.push(towel.replace(pattern, ''));
+    tails.push(towel.replace(pattern, ''));
   });
 
-  const amount = starts.reduce((acc, start) => acc + +canBeBuild(start), 0);
+  const amount = tails.reduce((acc, tail) => acc + +canBeBuild(tail), 0);
   store.set(towel, amount);
 
   return amount;
