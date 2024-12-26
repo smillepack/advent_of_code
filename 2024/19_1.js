@@ -13,18 +13,17 @@ const canBeBuild = (towel) => {
   if (towel.length === 0) return true;
   if (store.has(towel)) return store.get(towel);
 
-  const starts = [];
-  colorPatterns.forEach((pattern) => {
-    if (!towel.startsWith(pattern)) return;
+  for (let i = 0; i < colorPatterns.length; i++) {
+    if (!towel.startsWith(colorPatterns[i])) continue;
+    if (!canBeBuild(towel.replace(colorPatterns[i], ''))) continue;
 
-    starts.push(towel.replace(pattern, ''));
-  });
+    store.set(towel, true);
+    return true;
+  }
 
-  const some = starts.some(canBeBuild);
-  store.set(towel, some);
-
-  return some;
+  store.set(towel, false);
+  return false;
 }
 
 const result = towels.reduce((acc, towel) => acc + +canBeBuild(towel), 0);
-console.log('result ', result)
+console.log('result ', result);
