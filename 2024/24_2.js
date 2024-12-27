@@ -33,29 +33,17 @@ const getRule = (x, y, c) => {
 
 const x00 = `x${('0' + 0).slice(-2)}`;
 const y00 = `y${('0' + 0).slice(-2)}`;
-
-// const z00 = getRule(x00, y00, 'XOR');
 let carry = getRule(x00, y00, 'AND');
-// console.log(x00, y00, z00, carry);
 
 const swapped = [];
 for (let i = 1; i <= 40; i++) {
-  // console.log(" ");
-  // console.log('swapped', swapped);
-
   const xnn = `x${('0' + i).slice(-2)}`;
   const ynn = `y${('0' + i).slice(-2)}`;  
   const xXORy = getRule(xnn, ynn, 'XOR');
   const xANDy = getRule(xnn, ynn, 'AND');
 
-  // console.log(xnn, ynn);
-  // console.log('xXORy', xXORy);
-  // console.log('xANDy', xANDy);
-
   const z = getRule(carry.result, xXORy.result, 'XOR');
   const prepCarry = getRule(carry.result, xXORy.result, 'AND');
-  // console.log('z', z);
-  // console.log('prepCarry', prepCarry);
 
   if (z === undefined && prepCarry === undefined) {
     [xXORy.result, xANDy.result] = [xANDy.result, xXORy.result];
@@ -67,7 +55,6 @@ for (let i = 1; i <= 40; i++) {
   }
   
   carry = getRule(prepCarry.result, xANDy.result, 'OR');
-  // console.log('carry', carry);
 
   if (!z.result.startsWith('z')) {
     const current = rules.find(({ result }) => result === z.result);
