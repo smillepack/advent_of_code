@@ -2,11 +2,9 @@ import * as fs from "node:fs/promises";
 
 // const file = await fs.readFile("dummy_small.txt", { encoding: "utf8" });
 const file = await fs.readFile("dummy.txt", { encoding: "utf8" });
-// console.log(file);
 
 const map = file.split("\n").map((row) => row.split(''));
 if (map.at(-1) === '') map.pop();
-// console.log(map)
 
 const getNextPosition = ({ x, y }, direction) => {
   if (direction === 0) return { x, y: y - 1 };
@@ -15,7 +13,7 @@ const getNextPosition = ({ x, y }, direction) => {
   else if (direction === 270) return { x: x - 1, y };
 }
 
-const getPosibilePositions = (position, direction) => {
+const getPossiblePositions = (position, direction) => {
   const counterclockwiseD = (direction - 90 + 360) % 360;
   const clockwiseD = (direction + 90) % 360;
 
@@ -24,40 +22,32 @@ const getPosibilePositions = (position, direction) => {
     direction: counterclockwiseD
   }, {
     ...getNextPosition(position, direction),
-    direction: direction
+    direction
   }, {
     ...getNextPosition(position, clockwiseD),
     direction: clockwiseD
   }];
 }
 
-const startY = map.findIndex((row) => row.includes('S'));
-const startX = map[startY].findIndex((cell) => cell === 'S');
-const endY = map.findIndex((row) => row.includes('E'));
-const endX = map[endY].findIndex((cell) => cell === 'E');
+const sy = map.findIndex((row) => row.includes('S'));
+const sx = map[sy].findIndex((cell) => cell === 'S');
 
-(function move(position, direction, score) {
-    if (score > map[endY][endX]) return;
+const ey = map.findIndex((row) => row.includes('E'));
+const ex = map[ey].findIndex((cell) => cell === 'E');
 
-    if (Number.isInteger(map[position.y][position.x])) {
-      map[position.y][position.x] = Math.min(map[position.y][position.x], score);
-    } else {
-      map[position.y][position.x] = score;
-    }
-    const possiblePositions = getPosibilePositions(position, direction);
-    possiblePositions.forEach(({ x, y, direction: pd }) => {
-        if (map[y][x] === '#') return;
-        if (Number.isInteger(map[y][x]) && score > map[y][x]) return;
+(function move(cx, cy, direction, score) {
+  if (score > map[ey][ex]) return;
+  if (score >= map[cy][cx]) return;
 
-        if (pd !== direction) {
-            move({ x, y }, pd, score + 1001);
-        } else {
-            move({ x, y }, pd, score + 1);
-        }
-        
-    })
+  map[cy][cx] = score;
 
-})({ x: startX, y: startY }, 90, 0);
+  const possiblePositions = getPossiblePositions({ x: cx, y: cy }, direction);
+  possiblePositions.forEach(({ x, y, direction: pd }) => {
+    if (map[y][x] === '#') return;
+    if (score >= map[y][x]) return;
 
-// console.log(map)
-console.log(map[endY][endX])
+    move(x, y, pd, pd !== direction ? score + 1001 : score + 1);
+  });
+})(sx, sy, 90, 0);
+
+console.log('result =', map[ey][ex])
