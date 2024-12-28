@@ -12,9 +12,6 @@ const separator = data.indexOf('');
 const refsData = data.toSpliced(separator);
 const inputData = data.toSpliced(0, separator + 1);
 
-// console.log('refsData', refsData)
-// console.log('input', input)
-
 const refs = new Map();
 refsData.forEach((str) => {
   const [key, value] = str.split(": ");
@@ -30,23 +27,19 @@ inputData.forEach((str) => {
   rules.push({ leftKey, command, rightKey, result });
 });
 
-// console.log('rules', rules)
-
 const commands = new Map([
   ['AND', (l, r) => l & r],
   ['OR', (l, r) => l | r],
   ['XOR', (l, r) => l ^ r],
 ]);
 
-
 while (rules.some(({ leftKey, rightKey, result }) => !refs.has(leftKey) || !refs.has(rightKey) || !refs.has(result))) {
   rules.forEach(({ leftKey, command, rightKey, result }) => {
     if (!refs.has(leftKey) || !refs.has(rightKey)) return;
-  
+
     refs.set(result, commands.get(command)(refs.get(leftKey), refs.get(rightKey)));
   });
 };
-console.log('refs', refs);
 
 let result = [];
 refs.forEach((_, key) => {
@@ -56,4 +49,3 @@ refs.forEach((_, key) => {
 });
 result = result.sort().reverse().map((key) => refs.get(key)).join('');
 console.log('result', parseInt(result, 2));
-
