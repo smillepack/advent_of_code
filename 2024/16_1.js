@@ -6,48 +6,42 @@ const file = await fs.readFile("dummy.txt", { encoding: "utf8" });
 const map = file.split("\n").map((row) => row.split(''));
 if (map.at(-1) === '') map.pop();
 
-const getNextPosition = ({ x, y }, direction) => {
-  if (direction === 0) return { x, y: y - 1 };
-  else if (direction === 90) return { x: x + 1, y };
-  else if (direction === 180) return { x, y: y + 1 };
-  else if (direction === 270) return { x: x - 1, y };
-}
-
-const getPossiblePositions = (position, direction) => {
-  const counterclockwiseD = (direction - 90 + 360) % 360;
-  const clockwiseD = (direction + 90) % 360;
-
-  return [{
-    ...getNextPosition(position, counterclockwiseD),
-    direction: counterclockwiseD
+const positionsAround = [
+  {
+    dx: 1,
+    dy: 0,
+    dd: 90
   }, {
-    ...getNextPosition(position, direction),
-    direction
+    dx: -1,
+    dy: 0,
+    dd: 270
   }, {
-    ...getNextPosition(position, clockwiseD),
-    direction: clockwiseD
-  }];
-}
-
+    dx: 0,
+    dy: 1,
+    dd: 180
+  }, {
+    dx: 0,
+    dy: -1,
+    dd: 0
+  }
+];
 const sy = map.findIndex((row) => row.includes('S'));
 const sx = map[sy].findIndex((cell) => cell === 'S');
 
 const ey = map.findIndex((row) => row.includes('E'));
 const ex = map[ey].findIndex((cell) => cell === 'E');
 
-(function move(cx, cy, direction, score) {
+(function move(cx, cy, cd, score) {
   if (score > map[ey][ex]) return;
   if (score >= map[cy][cx]) return;
 
   map[cy][cx] = score;
 
-  const possiblePositions = getPossiblePositions({ x: cx, y: cy }, direction);
-  possiblePositions.forEach(({ x, y, direction: pd }) => {
-    if (map[y][x] === '#') return;
-    if (score >= map[y][x]) return;
+  positionsAround.filter(({ dd }) => dd !== (cd + 180) % 360).forEach(({ dx, dy, dd }) => {
+    if (map[cy + dy][cx + dx] === '#') return;
+    if (map[cy + dy][cx + dx] <= score) return;
 
-    move(x, y, pd, pd !== direction ? score + 1001 : score + 1);
+    move(cx + dx, cy + dy, dd, dd !== cd ? score + 1001 : score + 1);
   });
 })(sx, sy, 90, 0);
-
 console.log('result =', map[ey][ex])
